@@ -28,7 +28,8 @@ const addExpense = async(req, res, next) => {
         const data = await Expense.create({
             amount: amount,
             description: description,
-            category: category
+            category: category,
+            userId: req.user.id
         })
         res.status(201).json({newExpenseDetails: data, success: true})
     }
@@ -47,7 +48,7 @@ const getExpense = async (req,res,next) => {
         return res.status(200).json({ expenses, success: true})
     }
     catch(err){
-        console.log('error occurred during get expense',JSON.stringify(err));
+        console.log('error occurred during get expense in backend',JSON.stringify(err));
         res.status(500).json({error: err, success: false});
     }
 }
@@ -57,10 +58,10 @@ const getExpense = async (req,res,next) => {
 const deleteExpense = async (req,res,next) => {
     try{
         const expenseId = req.params.expenseId;
-        if(expenseId == undefined || expenseId === 0){
+        if(expenseId == undefined || expenseId.length === 0){
             return res.status(400).json({success:false, message:'Parameters are missing'})
         }
-        const noOfRows = await Expense.destroy({where: {id: expenseId}})
+        const noOfRows = await Expense.destroy({where: {id: expenseId, userId: req.user.id}})
             if(noOfRows === 0){
                 return res.status(404).json({success: false, message: 'Expense doenst belong to the user'})
             }    
