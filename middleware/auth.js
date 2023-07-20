@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
 
     try{
         const token = req.header('Authorization');
@@ -9,15 +9,15 @@ const authenticate = (req, res, next) => {
         const user = jwt.verify(token, 'secretKey');
         console.log('userId >>>', user.userId);
 
-        User.findByPk(userId).then(user => {
-            //console.log(JSON.stringify(user));
-            req.user = user;
-            next();
-        })
-        .catch(err => {
-            throw new Error(err)
-        })
+        try{
+            const userN = await User.findByPk(user.userId);
 
+            req.user = userN;
+            next();
+        }
+        catch(err){
+            throw new Error(err);
+        }
     }
     catch(err){
         console.log(err);
