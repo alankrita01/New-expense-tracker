@@ -12,11 +12,11 @@ async function expense(e){
         const expenseDetails = {
             amount : amount,
             description : description,
-            category : category,
-            userId : 1
+            category : category
         }
 
-        const response = await axios.post('http://localhost:3000/expense/add-expense',expenseDetails)
+        const token = localStorage.getItem('token')
+        const response = await axios.post('http://localhost:3000/expense/add-expense',expenseDetails, {headers: {"Authorization" : token}})
         showOnScreen(response.data.newExpenseDetails);
     }
     catch(err){
@@ -29,7 +29,7 @@ async function expense(e){
 window.addEventListener("DOMContentLoaded",async (e) => {
     try{
         const token = localStorage.getItem('token')
-        const response = await axios.get("http:localhost:3000/expense/get-expense", {headers: {"Authorization":token}})
+        const response = await axios.get("http:localhost:3000/expense/get-expense", {headers: {"Authorization" : token}})
         //console.log(response)
         response.data.expenses.forEach(expense => {
             showOnScreen(expense);
@@ -68,10 +68,11 @@ function editExpenseDetails(description,amount, category, expenseId) {
 
 //delete expense
 async function deleteExpense(expenseId){
-    console.log('ala')
+    
     try{
-        console.log('try')
-        await axios.delete(`http://localhost:3000/expense/delete-expense/${expenseId}`)
+      
+        const token = localStorage.getItem('token')
+        await axios.delete(`http://localhost:3000/expense/delete-expense/${expenseId}`, {headers: {"Authorization" : token}})
         //console.log(response);
         removeUserFromScreen(expenseId);
     }
@@ -94,7 +95,8 @@ async function deleteExpense(expenseId){
 function removeUserFromScreen(expenseId) {
     console.log('r', expenseId);
     const expenseElemId = `expense-${expenseId}`;
-    const parentNode = document.getElementById("listOfExpenses");
+    document.getElementById(expenseElemId).remove();
+    /*const parentNode = document.getElementById("listOfExpenses");
     const childNodeToBeDeleted = document.getElementById(expenseElemId);
   
     console.log('parentNode:', parentNode);
@@ -104,5 +106,5 @@ function removeUserFromScreen(expenseId) {
       parentNode.removeChild(childNodeToBeDeleted);
     } else {
       console.log('Element with expenseId not found.');
-    }
+    }*/
   }
