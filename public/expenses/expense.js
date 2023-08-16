@@ -1,5 +1,6 @@
 
 
+
 //add Expense
 async function expense(e){
     try{
@@ -55,17 +56,6 @@ function showOnScreen(expense) {
 }
 
 
-//edit expense
-function editExpenseDetails(description,amount, category, expenseId) {
-  
-    document.getElementById("description").value = description;
-    document.getElementById("amount").value = amount;
-    document.getElementById("category").value = category;
-
-    deleteExpense(expenseId);
-}
-
-
 //delete expense
 async function deleteExpense(expenseId){
     
@@ -81,30 +71,47 @@ async function deleteExpense(expenseId){
     }
 }
 
-//remove expense
-/*function removeUserFromScreen(expenseId) {
-    console.log('r',expenseId)
-    const parentNode = document.getElementById("listOfExpenses");
-    const childNodeToBeDeleted = document.getElementById(expenseId);
-  
-    console.log(childNodeToBeDeleted);
-    if (childNodeToBeDeleted) {
-      parentNode.removeChild(childNodeToBeDeleted);
-    }
-}*/
+
 function removeUserFromScreen(expenseId) {
-    console.log('r', expenseId);
+    console.log('expenseID >>>>', expenseId);
     const expenseElemId = `expense-${expenseId}`;
     document.getElementById(expenseElemId).remove();
-    /*const parentNode = document.getElementById("listOfExpenses");
-    const childNodeToBeDeleted = document.getElementById(expenseElemId);
-  
-    console.log('parentNode:', parentNode);
-    console.log('childNodeToBeDeleted:', childNodeToBeDeleted);
-  
-    if (childNodeToBeDeleted) {
-      parentNode.removeChild(childNodeToBeDeleted);
-    } else {
-      console.log('Element with expenseId not found.');
-    }*/
+  }
+
+
+  document.getElementById('premium_button').onclick = async function(e) {
+    try{
+        const token = localStorage.getItem('token')
+        const response = await axios.get('http://localhost:3000/purchase/premium-membership',{headers: {"Authorization" : token}})
+        console.log(response);
+        
+        var options =
+        {
+            "key": response.data.key_id,  //Enter key ID generated from the dashboard
+            "order_id": response.data.order.id, //for one time payment
+            //this handler function will handle the success payment
+            
+            "handler": async function(response){
+            await axios.post('http://localhost:3000/purchase/update-transactionstatus',{
+                order_id: options.order_id,
+                payment_id: response.razorpay_payment_id,
+            },
+            {headers: {"Authorization" : token}}),
+
+            alert('you are a premium user now')
+            },
+        }
+        const rzp1 = new Razorpay(options);
+        rzp1.open();
+        e.preventDefault();
+
+        rzp1.on('payment.failed', function(response){
+            console.log(response)
+            alert('something went wrong')
+        })
+
+    }
+    catch(err){
+        console.log(err);
+    }
   }
