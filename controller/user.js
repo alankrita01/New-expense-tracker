@@ -41,9 +41,9 @@ const signup = async (req,res,next) => {
 }
 
 
-function generateAccessToken(id, name){
-    return jwt.sign({userId: id, name: name},'secretKey');
-};
+const generateAccessToken = (id, name, ispremiumuser) => {
+    return jwt.sign({ userId : id, name: name, ispremiumuser } ,'secretkey');
+}
 
 
 const login = async (req,res,next) => {
@@ -82,5 +82,6 @@ const login = async (req,res,next) => {
 
 module.exports = {
     signup,
-    login
+    login,
+    generateAccessToken
 }
