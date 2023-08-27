@@ -25,13 +25,34 @@ const addExpense = async(req, res, next) => {
             return res.status(400).json({success: false, message: 'Parameter missing'})
         }
 
-        const data = await Expense.create({
-            amount: amount,
-            description: description,
-            category: category,
-            userId: req.user.id
-        })
-        res.status(201).json({newExpenseDetails: data, success: true})
+        try{
+            const data = await Expense.create({
+                amount: amount,
+                description: description,
+                category: category,
+                userId: req.user.id
+            })
+    
+            const totalExpense = Number(req.user.totalExpense) + Number(amount);
+            console.log(totalExpense);
+
+            await myTable.update(
+                {
+                    totalExpense: totalExpense,
+                },
+                {
+                    where:{ id: req.user.id},
+                    transaction: t
+                }
+            )
+
+            await t.commit()
+            res.status(201).json({newExpenseDetails: data, success: true})
+        }
+        catch(err){
+            await t.rollback();
+            return res.status(500).json({success: false, error: err})
+        }
     }
     catch(err){
         console.log('error occurred during adding expenses',JSON.stringify(err));
@@ -44,7 +65,7 @@ const addExpense = async(req, res, next) => {
 
 const getExpense = async (req,res,next) => {
     try{
-        const expenses = await Expense.findAll({where: {userId: req.user.id}})
+        const expenses = await req.user.getExpense()
         return res.status(200).json({ expenses, success: true})
     }
     catch(err){

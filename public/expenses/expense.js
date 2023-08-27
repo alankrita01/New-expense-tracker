@@ -1,3 +1,6 @@
+//find the error which cause JsonWebTokenError: invalid signature error and in which does it occur in this code?
+
+      
 //add Expense
 async function expense(e){
     try{
@@ -53,8 +56,9 @@ window.addEventListener("DOMContentLoaded",async (e) => {
             showLeaderboard()
         }
 
-        const response = await axios.get("http:localhost:3000/expense/get-expense", {headers: {"Authorization" : token}})
-        //console.log(response)
+        console.log("token>>>",token)
+        const result = await axios.get("http:localhost:3000/expense/get-expense", {headers: {"Authorization" : token}})
+        console.log(result, "token2>>>",token)
         response.data.expenses.forEach(expense => {
             showOnScreen(expense);
         })
