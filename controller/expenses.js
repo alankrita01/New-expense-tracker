@@ -1,4 +1,5 @@
 const Expense = require('../models/expenseModel');
+const User = require('../models/userModel')
 
 function isstringinvalid(string){
     if(string == undefined || string.length === 0){
@@ -32,27 +33,24 @@ const addExpense = async(req, res, next) => {
                 category: category,
                 userId: req.user.id
             })
-    
+            
             const totalExpense = Number(req.user.totalExpense) + Number(amount);
             console.log(totalExpense);
 
-            await myTable.update(
+            await User.update(
                 {
                     totalExpense: totalExpense,
                 },
                 {
-                    where:{ id: req.user.id},
-                    transaction: t
+                    where: {id: req.user.id}
                 }
             )
-
-            await t.commit()
             res.status(201).json({newExpenseDetails: data, success: true})
         }
         catch(err){
-            await t.rollback();
-            return res.status(500).json({success: false, error: err})
+            res.status(500).json({success: false, error:err});
         }
+        
     }
     catch(err){
         console.log('error occurred during adding expenses',JSON.stringify(err));
@@ -65,7 +63,7 @@ const addExpense = async(req, res, next) => {
 
 const getExpense = async (req,res,next) => {
     try{
-        const expenses = await req.user.getExpense()
+        const expenses = await Expense.findAll({where: {userId: req.user.id}})
         return res.status(200).json({ expenses, success: true})
     }
     catch(err){

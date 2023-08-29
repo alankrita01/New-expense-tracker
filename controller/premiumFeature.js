@@ -6,9 +6,9 @@ const sequelize = require('../util/database');
 
 const getUserLeaderBoard = async (req,res,next) => {
     try{
-        const leaderboardOfUsers = await myTable.findAll({
-            
-            order:[['total_cost','DESC']]
+        const leaderboardOfUsers = await User.findAll({
+              
+            order:[['totalExpenses','DESC']]
         })
         res.status(200).json(leaderboardOfUsers)
     }
