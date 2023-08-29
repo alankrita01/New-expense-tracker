@@ -2,10 +2,13 @@ const path = require('path');
 const express = require('express');
 const sequelize = require('./util/database');
 
+//Routes
 const userRoute = require('./routes/userRoute');
 const expenseRoute = require('./routes/expenseRoute');
 const purchaseRoute = require('./routes/purchaseRoute');
+const leaderboardRoute = require('./routes/premiumFeatureRoute')
 
+//tables
 const User = require('./models/userModel');
 const Expense = require('./models/expenseModel');
 const Order = require('./models/ordersModel');
@@ -31,11 +34,14 @@ app.get('/', async (req,res,next) => {
 app.use(express.static('public'));
 
 
-
+//calling Routes
 app.use('/user',userRoute);
 app.use('/expense',expenseRoute);
 app.use('/purchase',purchaseRoute);
+app.use('/premium',leaderboardRoute);
 
+
+//realtion
 User.hasMany(Expense);
 Expense.belongsTo(User);
 
