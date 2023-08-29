@@ -1,5 +1,6 @@
 const Expense = require('../models/expenseModel');
 const User = require('../models/userModel')
+const sequelize = require('../util/database')
 
 function isstringinvalid(string){
     if(string == undefined || string.length === 0){
@@ -18,6 +19,9 @@ const addExpense = async(req, res, next) => {
         const description = req.body.description;
         const category = req.body.category;
 
+        //transaction
+        const t = await sequelize.transaction();
+
         if(amount == undefined || amount.length === 0){
             return res.status(400).json({success: false, message: 'Parameter missing'})
         }
@@ -32,7 +36,9 @@ const addExpense = async(req, res, next) => {
                 description: description,
                 category: category,
                 userId: req.user.id
-            })
+            },
+            {transaction:t}
+            );
             
             const totalExpense = Number(req.user.totalExpense) + Number(amount);
             console.log(totalExpense);
@@ -42,12 +48,15 @@ const addExpense = async(req, res, next) => {
                     totalExpense: totalExpense,
                 },
                 {
-                    where: {id: req.user.id}
+                    where: {id: req.user.id},
+                    transaction:t
                 }
             )
+            await t.commit()
             res.status(201).json({newExpenseDetails: data, success: true})
         }
         catch(err){
+            await t.rollback()
             res.status(500).json({success: false, error:err});
         }
         
@@ -77,10 +86,19 @@ const getExpense = async (req,res,next) => {
 const deleteExpense = async (req,res,next) => {
     try{
         const expenseId = req.params.expenseId;
+        console.log(expenseId);
         if(expenseId == undefined || expenseId.length === 0){
             return res.status(400).json({success:false, message:'Parameters are missing'})
         }
+
+        const expense = await Expense.findOne({where: {id: expenseId, userId: req.user.id}})
+        const totalExpenses = await Expense.sum('amount',{where: {userId: req.user.id}})
+        const updatedTotalExpense = totalExpenses - expense;
+
         const noOfRows = await Expense.destroy({where: {id: expenseId, userId: req.user.id}})
+        await Expense.update({
+            totalExpenses: updatedTotalExpense},{where: {id:req.user.id}}
+        )
             if(noOfRows === 0){
                 return res.status(404).json({success: false, message: 'Expense doenst belong to the user'})
             }    
