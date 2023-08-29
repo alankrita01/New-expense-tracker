@@ -59,7 +59,7 @@ window.addEventListener("DOMContentLoaded",async (e) => {
         console.log("token>>>",token)
         const result = await axios.get("http:localhost:3000/expense/get-expense", {headers: {"Authorization" : token}})
         console.log(result, "token2>>>",token)
-        response.data.expenses.forEach(expense => {
+        result.data.expenses.forEach(expense => {
             showOnScreen(expense);
         })
     }
@@ -117,7 +117,7 @@ function showLeaderboard(){
         var leaderboardElem = document.getElementById('leaderboard')
         leaderboardElem.innerHTML += `<h1> Leader Board </h1>`
         userLeaderBoardArray.data.forEach((userDeatils) => {
-            leaderboardElem.innerHTML += `<li>Name - ${userDeatils.name} Total Expense - ${userDeatils.total_cost || 0} </li>`
+            leaderboardElem.innerHTML += `<li>Name - ${userDeatils.name} Total Expense - ${userDeatils.totalExpenses || 0} </li>`
         })
     }
     document.getElementById("message").appendChild(inputElement);
