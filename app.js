@@ -6,7 +6,8 @@ const sequelize = require('./util/database');
 const userRoute = require('./routes/userRoute');
 const expenseRoute = require('./routes/expenseRoute');
 const purchaseRoute = require('./routes/purchaseRoute');
-const leaderboardRoute = require('./routes/premiumFeatureRoute')
+const leaderboardRoute = require('./routes/premiumFeatureRoute');
+const forgotPassRoute = require('./routes/forgotPassRoute');
 
 //tables
 const User = require('./models/userModel');
@@ -39,6 +40,7 @@ app.use('/user',userRoute);
 app.use('/expense',expenseRoute);
 app.use('/purchase',purchaseRoute);
 app.use('/premium',leaderboardRoute);
+app.use('/password',forgotPassRoute);
 
 
 //realtion
