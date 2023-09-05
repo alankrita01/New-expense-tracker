@@ -85,8 +85,6 @@ const resetPassword = async (req,res,next) => {
 
 
 
-
-
 module.exports ={
     forgotPass,
     resetPassword
