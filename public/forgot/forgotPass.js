@@ -2,14 +2,16 @@ async function forgotPassword(event){
 
     try{
         event.preventDefault();
-        const email = document.getElementById('email').ariaValueMax;
+        console.log(event.target.name);
+        const form = new FormData(event.target);
 
         const forgotPass = {
-            email: email
+            email: form.get("email"),
         }
 
         console.log(forgotPass);
-        const response = await axios.post('http:localhost:3000/password/forgot-password',forgotPass)
+        const response = await axios.post('http://localhost:3000/password/forgot-password',forgotPass)
+        console.log("response =>>>",response);
         alert(response.data.message)
 
         if(response.status === 202){

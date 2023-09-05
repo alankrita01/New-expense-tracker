@@ -12,7 +12,8 @@ const forgotPass = async (req,res,next) => {
 
         if(user){
             const id = uuid.v4();
-            user.createForgotPassword({id, active:true})
+            console.log("id =>>",id);
+            user.createForgotPassword({ id, active: true})
                 .catch(err=>{
                     throw new Error(err)
                 })
@@ -29,9 +30,12 @@ const forgotPass = async (req,res,next) => {
                 sgMail
                 .send(msg)
                 .then((response) => {
+                    console.log("backend response =>>>", response)
                     return res.status(response[0].statusCode).json({message: 'Link to reset password sent to your mail',success: true})
                 })
+                
                 .catch((error) => {
+                    console.log('error occur in forgot passwaord backend 1')
                     throw new Error(error);
                 })
         }
@@ -41,7 +45,8 @@ const forgotPass = async (req,res,next) => {
 
     }
     catch(err){
-        console.log(err);
+        
+        console.log(err,'error occur in forgot passwaord backend 2');
         return res.json({message: err, success: false});
     }
 }

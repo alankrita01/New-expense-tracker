@@ -9,7 +9,7 @@ const ForgotPassword = sequelize.define('forgotpassword',{
         primaryKey: true
     },
     active: Sequelize.BOOLEAN,
-    expiresby: Sequelize.Date
+    expiresby: Sequelize.DATE
 })
 
 
