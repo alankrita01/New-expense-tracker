@@ -1,9 +1,9 @@
-async function forgotPassword(event){
+async function forgotPassword(e){
 
     try{
-        event.preventDefault();
-        console.log(event.target.name);
-        const form = new FormData(event.target);
+        e.preventDefault();
+        console.log(e.target.name);
+        const form = new FormData(e.target);
 
         const forgotPass = {
             email: form.get("email"),

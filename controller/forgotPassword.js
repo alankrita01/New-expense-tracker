@@ -25,6 +25,7 @@ const forgotPass = async (req,res,next) => {
                     from: 'alankritapatidar@gmail.com',
                     subject: 'Sending with SendGrid Is Fun',
                     text: 'and easy to do anywhere, even with Node.js',
+                    html: `<a href="http://localhost:3000/password/resetPassword/${id}">Reset password</a>`
                 }
 
                 sgMail
@@ -51,6 +52,42 @@ const forgotPass = async (req,res,next) => {
     }
 }
 
+
+const resetPassword = async (req,res,next) => {
+    try{
+        const id = req.params.id;
+        const forgotpasswordRequest = await ForgotPassword.findOne({where: {id}})
+
+        if(forgotpasswordRequest){
+            forgotpasswordRequest.update({ active: false});
+            res.status(200).send(
+            `<html>
+                <script> function forsubmitted(e){
+                    e.preventDefault();
+                    console.log('called')
+                }
+                </script>
+
+                <form action="/password/updatepassword/${id}" method="get">
+                    <lable for="newpassword"> Enter New Password</lable>
+                    <input type="password" name="newpassword" required></input>
+                    <button>reset password</button>
+                </form>
+            </html>`)
+            res.end()
+        }
+    }
+    catch(err){
+        console.log(err,'error occur in reset passwaord backend');
+        return res.json({message: err, success: false});
+    }
+}
+
+
+
+
+
 module.exports ={
-    forgotPass
+    forgotPass,
+    resetPassword
 }
